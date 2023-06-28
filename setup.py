@@ -11,7 +11,9 @@ setup(
     author_email='asaharan@onemindservices.com',
     maintainer='Prince Kumar',
     maintainer_email='pkumar@onemindservices.com',
-    install_requires=[],
+    install_requires=[
+        'GitPython',
+    ],
     packages=find_packages(),
     include_package_data=True,
     classifiers=[

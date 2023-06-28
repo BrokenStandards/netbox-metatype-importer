@@ -19,7 +19,7 @@ from utilities.views import ContentTypePermissionRequiredMixin, GetReturnURLMixi
 from .choices import TypeChoices
 from .filters import MetaTypeFilterSet
 from .forms import MetaTypeFilterForm
-from .gql import GQLError, GitHubGqlAPI
+from .gql import GQLError, GitHubGqlAPI, LocalGitAPI
 from .models import MetaType
 from .tables import MetaTypeTable
 
@@ -61,7 +61,11 @@ class GenericTypeLoadView(ContentTypePermissionRequiredMixin, GetReturnURLMixin,
         repo = plugin_settings.get('repo')
         branch = plugin_settings.get('branch')
         owner = plugin_settings.get('repo_owner')
-        gh_api = GitHubGqlAPI(token=token, owner=owner, repo=repo, branch=branch, path=self.path)
+        repos_dir = plugin_settings.get('repos_dir')
+        #gh_api = GitHubGqlAPI(token=token, owner=owner, repo=repo, branch=branch, path=self.path)
+        repo_uri = f"https://github.com/{owner}/{repo}.git"
+        
+        gh_api = LocalGitAPI(repo_uri=repo_uri, branch=branch, dest_path=repos_dir, path=self.path)
         try:
             models = gh_api.get_tree()
         except GQLError as e:
@@ -156,7 +160,12 @@ class GenericTypeImportView(ContentTypePermissionRequiredMixin, GetReturnURLMixi
             }
         )
 
-        gh_api = GitHubGqlAPI(token=token, owner=owner, repo=repo, branch=branch, path=self.type)
+        #gh_api = GitHubGqlAPI(token=token, owner=owner, repo=repo, branch=branch, path=self.type)
+        repos_dir = plugin_settings.get('repos_dir')
+        repo_uri = f"https://github.com/{owner}/{repo}.git"
+        
+        gh_api = LocalGitAPI(repo_uri=repo_uri, branch=branch, dest_path=repos_dir, path=self.type)
+
 
         query_data = {}
         # check already imported mdt
